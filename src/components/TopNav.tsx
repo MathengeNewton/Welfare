@@ -6,9 +6,9 @@ import { UserCircleIcon } from "@heroicons/react/24/solid";
 export default function TopNav() {
   const [open, setOpen] = useState(false);
   return (
-    <header className="w-full h-16 flex items-center justify-between px-8 bg-pcea-blue shadow z-20">
+    <header className="w-full h-16 flex items-center justify-between px-8 bg-gray-50 shadow z-20">
       <div className="flex items-center gap-3">
-        <span className="text-2xl font-bold text-pcea-gold tracking-wide">Welfare Dashboard</span>
+        <span className="text-lg font-semibold text-pcea-blue tracking-wide">Welfare Dashboard</span>
       </div>
       <div className="relative">
         <button

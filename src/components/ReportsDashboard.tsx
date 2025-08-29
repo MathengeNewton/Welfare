@@ -127,7 +127,7 @@ export default function ReportsDashboard() {
             <span className="font-semibold text-pcea-blue mb-2 block">Member Registration by Location (2025)</span>
             <ul>
               {registrationByLocation.map((r) => (
-                <li key={r.locationId} className="mb-1 flex justify-between text-pcea-black">
+                <li key={r.locationId + '-' + r.year} className="mb-1 flex justify-between text-pcea-black">
                   <span className="font-medium">{r.locationName}</span>
                   <span>{r.count} members</span>
                 </li>
@@ -139,7 +139,7 @@ export default function ReportsDashboard() {
             <span className="font-semibold text-pcea-blue mb-2 block">Location Contributions (2025-08)</span>
             <ul>
               {contributionsByLocation.map((r) => (
-                <li key={r.locationId} className="mb-1 flex justify-between text-pcea-black">
+                <li key={r.locationId + '-' + r.month} className="mb-1 flex justify-between text-pcea-black">
                   <span className="font-medium">{r.locationName}</span>
                   <span>KES {r.total}</span>
                 </li>
