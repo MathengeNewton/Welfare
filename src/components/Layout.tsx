@@ -1,6 +1,8 @@
+
 import React from 'react';
 import Link from 'next/link';
 import TopNav from './TopNav';
+import Image from 'next/image';
 
 const navItems = [
   { href: '/members', label: 'Members' },
@@ -15,11 +17,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen flex bg-pcea-white">
       <aside className="w-64 bg-pcea-blue shadow-md p-6 flex flex-col min-h-screen">
         <div className="flex flex-col items-center mb-6">
-          <img
+          <Image
             src="https://www.shutterstock.com/image-vector/science-cloud-computing-concept-based-600nw-2390397167.jpg"
             alt="Logo"
+            width={80}
+            height={80}
             className="w-20 h-20 rounded-full border-4 border-pcea-gold bg-white object-cover"
-            referrerPolicy="no-referrer"
+            style={{ objectFit: 'cover' }}
+            unoptimized
           />
         </div>
         <nav className="flex-1 mt-2">

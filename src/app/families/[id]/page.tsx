@@ -14,7 +14,7 @@ function getFamilyMembers(family: Family): Member[] {
   return mockMembers.filter((m) => family.memberIds.includes(m.id));
 }
 
-export default function FamilyDetailsPage({ params }: { params: { id: string } }) {
+export default function Page({ params }: { params: { id: string } }) {
   const family = getFamilyById(params.id);
   if (!family) return notFound();
   const members = getFamilyMembers(family);

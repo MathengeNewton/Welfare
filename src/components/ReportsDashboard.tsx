@@ -72,7 +72,7 @@ export default function ReportsDashboard() {
                 {/* X axis */}
                 <line x1="30" y1="80" x2="290" y2="80" stroke="#888" strokeWidth="1" />
                 {/* Y axis labels */}
-                {[0, 500, 1000].map((v, i) => (
+                {[0, 500, 1000].map((v) => (
                   <text key={v} x={0} y={80 - (v / 1000) * 60 + 4} fontSize="10" fill="#222">{v}</text>
                 ))}
                 {/* X axis labels */}
