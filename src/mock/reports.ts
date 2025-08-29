@@ -6,6 +6,10 @@ export const mockRegistrationReports: RegistrationReport[] = [
 ];
 
 export const mockLocationContributionReports: LocationContributionReport[] = [
+  { locationId: 'loc1', month: '2025-06', total: 500 },
+  { locationId: 'loc2', month: '2025-06', total: 300 },
+  { locationId: 'loc1', month: '2025-07', total: 800 },
+  { locationId: 'loc2', month: '2025-07', total: 600 },
   { locationId: 'loc1', month: '2025-08', total: 1000 },
   { locationId: 'loc2', month: '2025-08', total: 1000 },
 ];

@@ -12,7 +12,7 @@ export default function FamiliesPage() {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-6">Families Management</h2>
+  <h2 className="text-2xl font-bold mb-6 text-pcea-black">Families Management</h2>
       <div className="mb-4">
         <button
           className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"

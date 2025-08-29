@@ -11,7 +11,7 @@ export default function ContributionsPage() {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-6">Contributions Management</h2>
+  <h2 className="text-3xl font-extrabold mb-6 text-pcea-black">Contributions Management</h2>
       <div className="mb-4">
         <button
           className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
