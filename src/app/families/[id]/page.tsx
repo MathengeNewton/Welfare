@@ -14,8 +14,13 @@ function getFamilyMembers(family: Family): Member[] {
   return mockMembers.filter((m) => family.memberIds.includes(m.id));
 }
 
-export default function Page({ params }: { params: { id: string } }) {
-  const family = getFamilyById(params.id);
+
+type PageProps = { params: Promise<{ id: string }> };
+
+export default async function Page(props: PageProps) {
+  const { params } = props;
+  const { id } = await params;
+  const family = getFamilyById(id);
   if (!family) return notFound();
   const members = getFamilyMembers(family);
   const head = members[0];
