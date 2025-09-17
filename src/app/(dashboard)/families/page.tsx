@@ -1,23 +1,23 @@
 "use client";
 import { useState, useEffect } from "react";
-import LocationTable from "../../components/LocationTable";
-import LocationForm from "../../components/LocationForm";
-import api from "../../utils/axios";
+import FamilyTable from "@/components/FamilyTable";
+import FamilyForm from "@/components/FamilyForm";
+import api from "@/utils/axios";
 
-export default function LocationsPage() {
+export default function FamiliesPage() {
   const [showForm, setShowForm] = useState(false);
-  const [locations, setLocations] = useState([]);
+  const [families, setFamilies] = useState([]);
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchData() {
       setLoading(true);
-      const [locationsRes, membersRes] = await Promise.all([
-        api.get("/locations"),
+      const [familiesRes, membersRes] = await Promise.all([
+        api.get("/families"),
         api.get("/members"),
       ]);
-      setLocations(locationsRes.data);
+      setFamilies(familiesRes.data);
       setMembers(membersRes.data);
       setLoading(false);
     }
@@ -26,25 +26,25 @@ export default function LocationsPage() {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-6 text-pcea-black">Locations Management</h2>
+      <h2 className="text-2xl font-bold mb-6 text-pcea-black">Families Management</h2>
       <div className="mb-4">
         <button
           className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
           onClick={() => setShowForm(true)}
         >
-          Add Location
+          Register Family
         </button>
       </div>
       {loading ? (
         <div className="text-center text-gray-400">Loading...</div>
       ) : (
-        <LocationTable locations={locations} members={members} />
+        <FamilyTable families={families} members={members} />
       )}
       {showForm && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-lg relative">
-            <h3 className="text-xl font-bold mb-4">Add Location</h3>
-            <LocationForm
+            <h3 className="text-xl font-bold mb-4">Register Family</h3>
+            <FamilyForm
               members={members}
               onSubmit={() => setShowForm(false)}
               onCancel={() => setShowForm(false)}

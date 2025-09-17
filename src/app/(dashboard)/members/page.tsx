@@ -1,8 +1,8 @@
 "use client";
 import { useState, useEffect } from "react";
-import MemberTable from "../../components/MemberTable";
-import MemberForm from "../../components/MemberForm";
-import api from "../../utils/axios";
+import MemberTable from "@/components/MemberTable";
+import MemberForm from "@/components/MemberForm";
+import api from "@/utils/axios";
 
 export default function MembersPage() {
   const [showForm, setShowForm] = useState(false);

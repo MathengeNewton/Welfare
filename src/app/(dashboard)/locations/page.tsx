@@ -1,8 +1,8 @@
 "use client";
 import { useState, useEffect } from "react";
-import LocationTable from "../../components/LocationTable";
-import LocationForm from "../../components/LocationForm";
-import api from "../../utils/axios";
+import LocationTable from "@/components/LocationTable";
+import LocationForm from "@/components/LocationForm";
+import api from "@/utils/axios";
 
 export default function LocationsPage() {
   const [showForm, setShowForm] = useState(false);

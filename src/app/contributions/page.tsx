@@ -1,17 +1,32 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ContributionTable from "../../components/ContributionTable";
 import ContributionForm from "../../components/ContributionForm";
-import { mockContributions } from "../../mock/contributions";
-import { mockMembers } from "../../mock/members";
+import api from "../../utils/axios";
 
 export default function ContributionsPage() {
   const [showForm, setShowForm] = useState(false);
-  // In a real app, use state for contributions and update on submit
+  const [contributions, setContributions] = useState([]);
+  const [members, setMembers] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchData() {
+      setLoading(true);
+      const [contributionsRes, membersRes] = await Promise.all([
+        api.get("/contributions"),
+        api.get("/members"),
+      ]);
+      setContributions(contributionsRes.data);
+      setMembers(membersRes.data);
+      setLoading(false);
+    }
+    fetchData();
+  }, []);
 
   return (
     <div>
-  <h2 className="text-3xl font-extrabold mb-6 text-pcea-black">Contributions Management</h2>
+      <h2 className="text-3xl font-extrabold mb-6 text-pcea-black">Contributions Management</h2>
       <div className="mb-4">
         <button
           className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
@@ -20,13 +35,17 @@ export default function ContributionsPage() {
           Add Contribution
         </button>
       </div>
-      <ContributionTable contributions={mockContributions} members={mockMembers} />
+      {loading ? (
+        <div className="text-center text-gray-400">Loading...</div>
+      ) : (
+        <ContributionTable contributions={contributions} members={members} />
+      )}
       {showForm && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-lg relative">
             <h3 className="text-xl font-bold mb-4">Add Contribution</h3>
             <ContributionForm
-              members={mockMembers}
+              members={members}
               onSubmit={() => setShowForm(false)}
               onCancel={() => setShowForm(false)}
             />

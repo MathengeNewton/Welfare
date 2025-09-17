@@ -1,47 +1,83 @@
 
-import { mockRegistrationReports, mockLocationContributionReports } from "../mock/reports";
-import { mockLocations } from "../mock/locations";
+
+import { useState, useEffect } from "react";
+import api from "../utils/axios";
+import { RegistrationReport, LocationContributionReport } from "../types/report";
+import { Location } from "../types/location";
+
+type RegistrationByLocation = RegistrationReport & { locationName: string };
+type ContributionByLocation = LocationContributionReport & { locationName: string };
 
 export default function ReportsDashboard() {
-  // Registration by location
-  const registrationByLocation = mockRegistrationReports.map((r) => {
-    const location = mockLocations.find((l) => l.id === r.locationId);
-    return {
-      ...r,
-      locationName: location ? location.name : r.locationId,
-    };
-  });
+  const [registrationByLocation, setRegistrationByLocation] = useState<RegistrationByLocation[]>([]);
+  const [contributionsByLocation, setContributionsByLocation] = useState<ContributionByLocation[]>([]);
+  const [locations, setLocations] = useState<string[]>([]);
+  const [months, setMonths] = useState<string[]>([]);
+  const [contributionsByLoc, setContributionsByLoc] = useState<Record<string, number[]>>({});
+  const [growth, setGrowth] = useState<Record<number, number>>({});
+  const [totalMembers, setTotalMembers] = useState<number>(0);
+  const [totalContributions, setTotalContributions] = useState<number>(0);
+  const [totalLocations, setTotalLocations] = useState<number>(0);
+  const [loading, setLoading] = useState<boolean>(true);
 
-  // Contributions by location and month
-  const contributionsByLocation = mockLocationContributionReports.map((r) => {
-    const location = mockLocations.find((l) => l.id === r.locationId);
-    return {
-      ...r,
-      locationName: location ? location.name : r.locationId,
-    };
-  });
+  useEffect(() => {
+    async function fetchData() {
+      setLoading(true);
+      const [reportsRes, locationsRes] = await Promise.all([
+        api.get("/reports"),
+        api.get("/locations"),
+      ]);
+      const reports: { registrationReports: RegistrationReport[]; locationContributionReports: LocationContributionReport[] } = reportsRes.data;
+      const locs: Location[] = locationsRes.data;
+      // Registration by location
+      const regByLoc: RegistrationByLocation[] = reports.registrationReports.map((r: RegistrationReport) => {
+        const location = locs.find((l: Location) => l.id === r.locationId);
+        return {
+          ...r,
+          locationName: location ? location.name : r.locationId,
+        };
+      });
+      // Contributions by location and month
+      const contribByLoc: ContributionByLocation[] = reports.locationContributionReports.map((r: LocationContributionReport) => {
+        const location = locs.find((l: Location) => l.id === r.locationId);
+        return {
+          ...r,
+          locationName: location ? location.name : r.locationId,
+        };
+      });
+      // Group contributions by month for each location
+      const monthsArr: string[] = Array.from(new Set(reports.locationContributionReports.map((r: LocationContributionReport) => r.month))).sort();
+      const locNames: string[] = locs.map((l: Location) => l.name);
+      const contribsByLoc: Record<string, number[]> = {};
+      locNames.forEach((loc: string) => {
+        contribsByLoc[loc] = monthsArr.map((month: string) => {
+          const found = contribByLoc.find((r: ContributionByLocation) => r.locationName === loc && r.month === month);
+          return found ? found.total : 0;
+        });
+      });
+      // Membership growth (mocked as registration count per year)
+      const growthObj: Record<number, number> = regByLoc.reduce((acc: Record<number, number>, curr: RegistrationByLocation) => {
+        acc[curr.year] = (acc[curr.year] || 0) + curr.count;
+        return acc;
+      }, {});
+      // Stats
+      setRegistrationByLocation(regByLoc);
+      setContributionsByLocation(contribByLoc);
+      setLocations(locNames);
+      setMonths(monthsArr);
+      setContributionsByLoc(contribsByLoc);
+      setGrowth(growthObj);
+      setTotalMembers(regByLoc.reduce((sum: number, r: RegistrationByLocation) => sum + r.count, 0));
+      setTotalContributions(contribByLoc.reduce((sum: number, r: ContributionByLocation) => sum + r.total, 0));
+      setTotalLocations(locs.length);
+      setLoading(false);
+    }
+    fetchData();
+  }, []);
 
-  // Group contributions by month for each location
-  const months = Array.from(new Set(mockLocationContributionReports.map(r => r.month))).sort();
-  const locations = mockLocations.map(l => l.name);
-  const contributionsByLoc: Record<string, number[]> = {};
-  locations.forEach(loc => {
-    contributionsByLoc[loc] = months.map(month => {
-      const found = contributionsByLocation.find(r => r.locationName === loc && r.month === month);
-      return found ? found.total : 0;
-    });
-  });
-
-  // Membership growth (mocked as registration count per year)
-  const growth = registrationByLocation.reduce((acc, curr) => {
-    acc[curr.year] = (acc[curr.year] || 0) + curr.count;
-    return acc;
-  }, {} as Record<number, number>);
-
-  // Mock stats for cards
-  const totalMembers = registrationByLocation.reduce((sum, r) => sum + r.count, 0);
-  const totalContributions = contributionsByLocation.reduce((sum, r) => sum + r.total, 0);
-  const totalLocations = mockLocations.length;
+  if (loading) {
+    return <div className="p-8 text-center text-gray-400">Loading...</div>;
+  }
 
   return (
     <div className="p-4 md:p-8">
@@ -76,15 +112,15 @@ export default function ReportsDashboard() {
                   <text key={v} x={0} y={80 - (v / 1000) * 60 + 4} fontSize="10" fill="#222">{v}</text>
                 ))}
                 {/* X axis labels */}
-                {months.map((m, i) => {
+                {months.map((m: string, i: number) => {
                   const x = 30 + (i / (months.length - 1 || 1)) * 260;
                   return <text key={`month-${m}`} x={x} y={90} fontSize="10" fill="#222" textAnchor="middle">{m.slice(5)}</text>;
                 })}
                 {/* Data lines */}
-                {locations.map((loc, idx) => {
+                {locations.map((loc: string, idx: number) => {
                   const color = idx === 0 ? '#1e3a8a' : '#e11d48';
                   const values = contributionsByLoc[loc];
-                  const points = values.map((v, i) => {
+                  const points = values.map((v: number, i: number) => {
                     const x = 30 + (i / (months.length - 1 || 1)) * 260;
                     const y = 80 - (v / 1000) * 60;
                     return `${x},${y}`;
@@ -96,7 +132,7 @@ export default function ReportsDashboard() {
               </svg>
             </div>
             <div className="flex justify-end gap-4 mt-2 text-xs">
-              {locations.map((loc, idx) => (
+              {locations.map((loc: string, idx: number) => (
                 <span key={`legend-${loc}`} className={idx === 0 ? "text-pcea-blue font-bold" : "text-pcea-red font-bold"}>{loc}</span>
               ))}
             </div>
